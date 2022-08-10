@@ -2,40 +2,37 @@
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "andreyorst/plug.kak" noload
 
+set-option global scrolloff 5,3
+set-option global autoreload yes
 set-option global tabstop 4
+set-option global indentwidth 4
+set-option global ui_options terminal_assistant=none terminal_padding_char= 
 
 add-highlighter global/ wrap
-add-highlighter global/ number-lines -relative
-
-hook global WinSetOption filetype=rs %{
-    add-highlighter -override window/ wrap -width=100
-}
-
-hook global ModeChange pop:insert:normal %{
-    write
-}
+add-highlighter global/ number-lines -relative -hlcursor
 
 # Exit insert mode with `jk`.
 hook global InsertChar k %{ try %{
-    exec -draft hH <a-k>jk<ret> d
-    exec <esc>
+  exec -draft hH <a-k>jk<ret> d
+  exec <esc>
+  write
 }}
 
 # Move in autocompletion with tab
 hook global InsertCompletionShow .* %{
-    try %{
-        # this command temporarily removes cursors preceded by whitespace;
-        # if there are no cursors left, it raises an error, does not
-        # continue to execute the mapping commands, and the error is eaten
-        # by the `try` command so no warning appears.
-        execute-keys -draft 'h<a-K>\h<ret>'
-        map window insert <tab> <c-n>
-        map window insert <s-tab> <c-p>
-        hook -once -always window InsertCompletionHide .* %{
-        unmap window insert <tab> <c-n>
-        unmap window insert <s-tab> <c-p>
-        }
+  try %{
+    # this command temporarily removes cursors preceded by whitespace;
+    # if there are no cursors left, it raises an error, does not
+    # continue to execute the mapping commands, and the error is eaten
+    # by the `try` command so no warning appears.
+    execute-keys -draft 'h<a-K>\h<ret>'
+    map window insert <tab> <c-n>
+    map window insert <s-tab> <c-p>
+    hook -once -always window InsertCompletionHide .* %{
+    unmap window insert <tab> <c-n>
+    unmap window insert <s-tab> <c-p>
     }
+  }
 }
 
 plug 'delapouite/kakoune-auto-percent'
@@ -43,10 +40,40 @@ plug "andreyorst/smarttab.kak"
 plug "delapouite/kakoune-palette"
 
 plug 'NNBnh/clipb.kak' config %{
-    clipb-detect
-    clipb-enable
+  clipb-detect
+  clipb-enable
 }
     
-plug "kak-lsp/kak-lsp" do %{
-    cargo install --locked --force --path .
+# Language specific configuration.
+hook global BufCreate (.*\.kak|kakrc) %{
+  set-option buffer tabstop 2
+  set-option global indentwidth 2
 }
+hook global WinSetOption filetype=rust %{
+  add-highlighter -override window/ wrap -width=100
+  source "%val{config}/filetypes/rust.kak"
+}
+
+hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
+  add-highlighter global/ regex "\{|\}|\(|\)|\[|\]|,|\.|;" 0:punctuation
+
+  eval %sh{kak-lsp --kakoune -s $kak_session}  # Not needed if you load it with plug.kak.
+  lsp-enable-window
+  map window user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
+  map global view h '<esc>: lsp-hover<ret>' -docstring "LSP hover"
+  map global view e '<esc>: lsp-find-error --include-warnings<ret>' -docstring "LSP next error"
+  map global view <a-e> '<esc>: lsp-find-error --previous --include-warnings<ret>' -docstring "LSP previous error"
+  hook window -group semantic-tokens BufReload .* lsp-semantic-tokens
+  hook window -group semantic-tokens NormalIdle .* lsp-semantic-tokens
+  hook window -group semantic-tokens InsertIdle .* lsp-semantic-tokens
+  hook -once -always window WinSetOption filetype=.* %{
+    remove-hooks window semantic-tokens
+  }
+
+  set-face global DiagnosticError default,default,bright-red+u
+  set-face global DiagnosticWarning default,default,yellow+u
+  set-face global DiagnosticInfo default
+}    
+
+# Colorscheme
+source "%val{config}/colorscheme.kak"
