@@ -8,7 +8,7 @@ set-option global tabstop 4
 set-option global indentwidth 4
 set-option global ui_options terminal_assistant=none terminal_padding_char= 
 
-add-highlighter global/ wrap
+add-highlighter global/ wrap -indent
 add-highlighter global/ number-lines -relative -hlcursor
 
 # Exit insert mode with `jk`.
@@ -49,31 +49,36 @@ hook global BufCreate (.*\.kak|kakrc) %{
   set-option buffer tabstop 2
   set-option global indentwidth 2
 }
+
+remove-hooks global rust-highlight
 hook global WinSetOption filetype=rust %{
-  add-highlighter -override window/ wrap -width=100
+  add-highlighter -override window/ wrap -width 100 -indent
   source "%val{config}/filetypes/rust.kak"
 }
 
-hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
-  add-highlighter global/ regex "\{|\}|\(|\)|\[|\]|,|\.|;" 0:punctuation
+# Colorscheme
+source "%val{config}/colorscheme.kak"
 
-  eval %sh{kak-lsp --kakoune -s $kak_session}  # Not needed if you load it with plug.kak.
-  lsp-enable-window
+# LSP stuff
+eval %sh{kak-lsp --kakoune -s $kak_session}
+lsp-enable
+
+hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
+  add-highlighter window/ regex "\{|\}|\(|\)|\[|\]|,|\.|;" 0:punctuation
+
   map window user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
   map global view h '<esc>: lsp-hover<ret>' -docstring "LSP hover"
   map global view e '<esc>: lsp-find-error --include-warnings<ret>' -docstring "LSP next error"
   map global view <a-e> '<esc>: lsp-find-error --previous --include-warnings<ret>' -docstring "LSP previous error"
+
   hook window -group semantic-tokens BufReload .* lsp-semantic-tokens
   hook window -group semantic-tokens NormalIdle .* lsp-semantic-tokens
   hook window -group semantic-tokens InsertIdle .* lsp-semantic-tokens
-  hook -once -always window WinSetOption filetype=.* %{
+  hook -once -always buffer WinSetOption filetype=.* %{
     remove-hooks window semantic-tokens
   }
 
   set-face global DiagnosticError default,default,bright-red+u
   set-face global DiagnosticWarning default,default,yellow+u
   set-face global DiagnosticInfo default
-}    
-
-# Colorscheme
-source "%val{config}/colorscheme.kak"
+}
