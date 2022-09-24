@@ -25,7 +25,7 @@ hook global InsertCompletionShow .* %{
     # if there are no cursors left, it raises an error, does not
     # continue to execute the mapping commands, and the error is eaten
     # by the `try` command so no warning appears.
-    execute-keys -draft 'h<a-K>\h<ret>'
+    execute-keys -draft "h<a-K>\h<ret>"
     map window insert <tab> <c-n>
     map window insert <s-tab> <c-p>
     hook -once -always window InsertCompletionHide .* %{
@@ -35,11 +35,12 @@ hook global InsertCompletionShow .* %{
   }
 }
 
-plug 'delapouite/kakoune-auto-percent'
+plug "delapouite/kakoune-auto-percent"
 plug "andreyorst/smarttab.kak"
 plug "delapouite/kakoune-palette"
+plug "occivink/kakoune-sudo-write"
 
-plug 'NNBnh/clipb.kak' config %{
+plug "NNBnh/clipb.kak" config %{
   clipb-detect
   clipb-enable
 }
@@ -52,7 +53,7 @@ hook global BufCreate (.*\.kak|kakrc) %{
 
 remove-hooks global rust-highlight
 hook global WinSetOption filetype=rust %{
-  add-highlighter -override window/ wrap -width 100 -indent
+  add-highlighter -override window/ wrap -width 101 -indent
   source "%val{config}/filetypes/rust.kak"
 }
 
@@ -60,25 +61,36 @@ hook global WinSetOption filetype=rust %{
 source "%val{config}/colorscheme.kak"
 
 # LSP stuff
-eval %sh{kak-lsp --kakoune -s $kak_session}
-lsp-enable
+plug "kak-lsp/kak-lsp" do %{
+    cargo install --locked --force --path .
+    # optional: if you want to use specific language servers
+    mkdir -p ~/.config/kak-lsp
+    cp -n kak-lsp.toml ~/.config/kak-lsp/
+}
 
 hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
-  add-highlighter window/ regex "\{|\}|\(|\)|\[|\]|,|\.|;" 0:punctuation
+  lsp-enable-window
+  lsp-semantic-tokens
 
-  map window user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
-  map global view h '<esc>: lsp-hover<ret>' -docstring "LSP hover"
-  map global view e '<esc>: lsp-find-error --include-warnings<ret>' -docstring "LSP next error"
-  map global view <a-e> '<esc>: lsp-find-error --previous --include-warnings<ret>' -docstring "LSP previous error"
-
-  hook window -group semantic-tokens BufReload .* lsp-semantic-tokens
-  hook window -group semantic-tokens NormalIdle .* lsp-semantic-tokens
-  hook window -group semantic-tokens InsertIdle .* lsp-semantic-tokens
-  hook -once -always buffer WinSetOption filetype=.* %{
-    remove-hooks window semantic-tokens
+  hook window -group semantic-tokens BufReload .* %{
+      lsp-highlight-references
+      lsp-semantic-tokens
+  }
+  hook window -group semantic-tokens NormalIdle .* %{
+      lsp-highlight-references
+      lsp-semantic-tokens
+  }
+  hook window -group semantic-tokens InsertIdle .* %{
+      lsp-highlight-references
+      lsp-semantic-tokens
   }
 
   set-face global DiagnosticError default,default,bright-red+u
   set-face global DiagnosticWarning default,default,yellow+u
   set-face global DiagnosticInfo default
+
+  map window user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
+  map global view h "<esc>: lsp-hover<ret>" -docstring "LSP hover"
+  map global view e "<esc>: lsp-find-error<ret>" -docstring "LSP next error"
+  map global view <a-e> "<esc>: lsp-find-error --previous <ret>" -docstring "LSP previous error"
 }
