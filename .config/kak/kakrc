@@ -35,6 +35,9 @@ hook global InsertCompletionShow .* %{
   }
 }
 
+# Global clipboard
+map global user y '<a-|>xsel -i -b<ret>'
+
 plug "delapouite/kakoune-auto-percent"
 plug "andreyorst/smarttab.kak"
 plug "delapouite/kakoune-palette"
