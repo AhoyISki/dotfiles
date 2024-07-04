@@ -1,15 +1,18 @@
-# I relented.
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "andreyorst/plug.kak" noload
 
+set-option global ui_options terminal_assistant=none terminal_padding_char=
 set-option global scrolloff 5,3
 set-option global autoreload yes
 set-option global tabstop 4
 set-option global indentwidth 4
-set-option global ui_options terminal_assistant=none terminal_padding_char= 
 
 add-highlighter global/ wrap -indent
 add-highlighter global/ number-lines -relative -hlcursor
+add-highlighter global/ show-matching
+
+map global normal u u,
+map global normal U U,
 
 # Exit insert mode with `jk`.
 hook global InsertChar k %{ try %{
@@ -18,6 +21,27 @@ hook global InsertChar k %{ try %{
   write
 }}
 
+define-command cargo-lclippy %{
+  evaluate-commands %sh{
+    str=$(cargo lclippy --all-targets --message-format json |\
+      jq -rcs '
+        .[-1].message.spans
+          | ..
+          | select(.is_primary? == true)
+          | [ .file_name, .line_start, .column_start ]
+          | @sh
+      '
+    )
+    declare -a args="($str)"
+
+    if [[ ! $args ]]; then
+      "echo No errors were found"
+    else
+      echo "e $(realpath ${args[0]}) ${args[1]} ${args[2]}"
+    fi
+  }
+}
+
 # Move in autocompletion with tab
 hook global InsertCompletionShow .* %{
   try %{
@@ -25,75 +49,100 @@ hook global InsertCompletionShow .* %{
     # if there are no cursors left, it raises an error, does not
     # continue to execute the mapping commands, and the error is eaten
     # by the `try` command so no warning appears.
-    execute-keys -draft "h<a-K>\h<ret>"
+    execute-keys -draft "hGh<a-k>\w<ret>"
     map window insert <tab> <c-n>
     map window insert <s-tab> <c-p>
     hook -once -always window InsertCompletionHide .* %{
-    unmap window insert <tab> <c-n>
-    unmap window insert <s-tab> <c-p>
+      unmap window insert <tab> <c-n>
+      unmap window insert <s-tab> <c-p>
     }
   }
 }
 
-# Global clipboard
-map global user y '<a-|>xsel -i -b<ret>'
-
-plug "delapouite/kakoune-auto-percent"
 plug "andreyorst/smarttab.kak"
 plug "delapouite/kakoune-palette"
 plug "occivink/kakoune-sudo-write"
 
-plug "NNBnh/clipb.kak" config %{
-  clipb-detect
-  clipb-enable
+plug "basbebe/modeline-extras.kak" %{
+  modeline-git-branch-enable
+  modeline-lsp-enable
 }
-    
+
+hook global RegisterModified '"' %{
+  nop %sh{
+    gpaste-client add "$kak_selections"
+  }
+}
+
+hook global WinCreate .*\.typ %{
+  set-option window filetype typst
+}
+
 # Language specific configuration.
-hook global BufCreate (.*\.kak|kakrc) %{
+hook global WinSetOption filetype=(.*\.kak|kakrc|fish|kak|latex|typst) %{
+  set-option global tabstop 2
+  set-option window indentwidth 2
+}
+
+hook global BufCreate () %{
   set-option buffer tabstop 2
   set-option global indentwidth 2
 }
 
-remove-hooks global rust-highlight
-hook global WinSetOption filetype=rust %{
-  add-highlighter -override window/ wrap -width 101 -indent
-  source "%val{config}/filetypes/rust.kak"
-}
-
-# Colorscheme
-source "%val{config}/colorscheme.kak"
-
 # LSP stuff
 plug "kak-lsp/kak-lsp" do %{
-    cargo install --locked --force --path .
-    # optional: if you want to use specific language servers
-    mkdir -p ~/.config/kak-lsp
-    cp -n kak-lsp.toml ~/.config/kak-lsp/
+  cargo install --locked --force --path .
+  # optional: if you want to use specific language servers
+  mkdir -p ~/.config/kak-lsp
+  cp -n kak-lsp.toml ~/.config/kak-lsp/
 }
 
-hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
-  lsp-enable-window
-  lsp-semantic-tokens
+remove-hooks global rust-highlight
+hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp|latex|typst) %{
+  evaluate-commands %sh{
+    GIT_DISCOVERY_ACROSS_FILESYSTEM=true git check-ignore -q . 2>/dev/null
+    if [ "$?" -eq "1" ]; then
+      echo "change-directory $(git rev-parse --show-toplevel)"
+    fi
+  }
+  map global lsp e '<esc>: cargo-lclippy<ret>' -docstring 'find next error'
 
+  add-highlighter -override window/ wrap -width 101 -indent
+  
   hook window -group semantic-tokens BufReload .* %{
-      lsp-highlight-references
-      lsp-semantic-tokens
+    lsp-highlight-references
+    lsp-semantic-tokens
   }
   hook window -group semantic-tokens NormalIdle .* %{
-      lsp-highlight-references
-      lsp-semantic-tokens
+    lsp-highlight-references
+    lsp-semantic-tokens
   }
   hook window -group semantic-tokens InsertIdle .* %{
-      lsp-highlight-references
-      lsp-semantic-tokens
+    lsp-highlight-references
+    lsp-semantic-tokens
+  }
+  hook window -group semantic-tokens PromptIdle .* %{
+    lsp-highlight-references
+    lsp-semantic-tokens
   }
 
-  set-face global DiagnosticError default,default,bright-red+u
-  set-face global DiagnosticWarning default,default,yellow+u
-  set-face global DiagnosticInfo default
+  lsp-enable-window
+  lsp-semantic-tokens
 
   map window user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
   map global view h "<esc>: lsp-hover<ret>" -docstring "LSP hover"
   map global view e "<esc>: lsp-find-error<ret>" -docstring "LSP next error"
   map global view <a-e> "<esc>: lsp-find-error --previous <ret>" -docstring "LSP previous error"
 }
+
+map global user l %{:enter-user-mode lsp<ret>} -docstring "LSP mode"
+map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+map global object e '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
+map global object k '<a-semicolon>lsp-object Class Interface Struct<ret>' -docstring 'LSP class interface or struct'
+map global object d '<a-semicolon>lsp-diagnostic-object --include-warnings<ret>' -docstring 'LSP errors and warnings'
+map global object D '<a-semicolon>lsp-diagnostic-object<ret>' -docstring 'LSP errors'
+
+# Other files
+source "%val{config}/statusline.kak"
+source "%val{config}/colorscheme.kak"

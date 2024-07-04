@@ -1,0 +1,1 @@
+set global modelinefmt '{File}%val{bufname}{{context_info}} {Git}%opt{modeline_git_branch} {{mode_info}} {Coords}%val{cursor_display_column}{Separator}:{Coords}%val{cursor_line}{Separator}/{Coords}%val{buf_line_count}'

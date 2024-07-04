@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Kakoune
+GenericName=Kakoune
+Comment=Minimal and modal text editor, with support for multiple cursors and extensive configuration
+Exec=kak -silent
+Icon=kakoune
+Terminal=false
+Categories=Terminal;TextEditor;ConsoleOnly;
+Keywords=text;editor;code
+MimeType=text/*;

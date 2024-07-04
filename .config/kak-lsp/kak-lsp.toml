@@ -239,6 +239,10 @@ forwardSearch.args = [
         '
     """,
 ]
+build.executable = "pdflatex"
+build.onSave = true
+chktex.onOpenAndSave = true
+chktex.onEdit = true
 
 [language.lua]
 filetypes = ["lua"]
@@ -274,12 +278,10 @@ intelephense.storagePath = "/tmp/intelephense"
 
 [language.python]
 filetypes = ["python"]
-roots = ["requirements.txt", "setup.py", ".git", ".hg"]
-command = "pylsp"
-settings_section = "_"
-[language.python.settings._]
-# See https://github.com/python-lsp/python-lsp-server#configuration
-# pylsp.configurationSources = ["flake8"]
+roots = ["requirements.txt", "pyproject.toml", "setup.py", ".git"]
+command = "pyright-langserver"
+args = ["--stdio"]
+offset_encoding = "utf-8"
 
 [language.r]
 filetypes = ["r"]
@@ -307,24 +309,6 @@ args = ["stdio"]
 # See https://github.com/castwide/solargraph/blob/master/lib/solargraph/language_server/host.rb
 # "solargraph.completion" = true
 
-# [language.rust]
-# filetypes = ["rust"]
-# roots = ["Cargo.toml"]
-# command = "sh"
-# args = [
-#     "-c",
-#     """
-#         if path=$(rustup which rls 2>/dev/null); then
-#             "$path"
-#         else
-#             rls
-#         fi
-#     """,
-# ]
-# [language.rust.settings.rust]
-# # See https://github.com/rust-lang/rls#configuration
-# # features = []
-
 [language.rust]
 filetypes = ["rust"]
 roots = ["Cargo.toml"]
@@ -341,8 +325,14 @@ args = [
 ]
 settings_section = "rust-analyzer"
 [language.rust.settings.rust-analyzer]
+semanticHighlighting.punctuation.enable = true
+semanticHighlighting.punctuation.specialization.enable = true
 # See https://rust-analyzer.github.io/manual.html#configuration
-hoverActions.enable = false # kak-lsp doesn't support this at the moment
+assist.emitMustUse = true
+hoverActions.enable = false
+checkOnSave.command = "clippy"
+imports.granularity.enforce = true
+references.excludeImports = true
 # cargo.features = []
 
 [language.terraform]
@@ -369,6 +359,11 @@ args = ["--stdio"]
 # enable = true
 # lint = true
 
+[language.typst]
+filetypes = ["typst"]
+roots = ["*.typ"]
+command = "typst-lsp"
+
 [language.yaml]
 filetypes = ["yaml"]
 roots = [".git", ".hg"]
@@ -394,19 +389,80 @@ command = "zls"
 # - Rust Analyzer: https://github.com/rust-analyzer/rust-analyzer/blob/master/crates/ide/src/syntax_highlighting.rs
 [semantic_tokens]
 faces = [
-    {face="documentation", token="comment", modifiers=["documentation"]},
-    {face="comment", token="comment"},
-    {face="function", token="function"},
-    {face="function", token="method"},
-    {face="keyword", token="keyword"},
-    {face="module", token="namespace"},
-    {face="operator", token="operator"},
-    {face="string", token="string"},
-    {face="type", token="type"},
-    {face="struct", token="struct"},
-    {face="struct", token="enum"},
-    {face="default+d", token="variable", modifiers=["readonly"]},
-    {face="constant", token="variable", modifiers=["constant"]},
-    {face="parameter", token="parameter"},
-    {face="variant", token="enumMember"},
+  # Comments
+  {face="comment", token="comment"},
+  {face="comment", token="comment", modifiers=["injected"]},
+
+  {face="documentation", token="comment", modifiers=["documentation"]},
+
+  # Objects
+  {face="default+d", token="variable", modifiers=["readonly"]},
+
+  {face="constant", token="variable", modifiers=["constant"]},
+  {face="constant", token="constParameter"},
+
+  {face="parameter", token="parameter"},
+  {face="parameter", token="typeParameter"},
+
+  {face="callable", token="variable", modifiers=["callable"]},
+  {face="callable", token="parameter", modifiers=["callable"]},
+
+  # Values
+  {face="value", token="boolean"},
+  {face="value", token="character"},
+  {face="value", token="number"},
+  {face="value", token="escapeSequence"},
+
+  {face="string", token="string"},
+
+  # Types
+  {face="struct", token="struct"},
+  {face="struct", token="typeAlias"},
+  {face="struct", token="selfTypeKeyword"},
+
+  {face="type", token="builtinType"},
+  {face="type", token="enum"},
+
+  {face="variant", token="enumMember"},
+
+  {face="interface", token="interface"},
+  {face="interface", token="derive"},
+
+  {face="function", token="function"},
+  {face="function", token="method"},
+
+  # Syntax
+  {face="keyword", token="keyword"},
+
+  {face="punctuation", token="parenthesis"},
+  {face="punctuation", token="bracket"},
+  {face="punctuation", token="brace"},
+  {face="punctuation", token="comma"},
+  {face="punctuation", token="dot"},
+  {face="punctuation", token="semicolon"},
+
+  {face="operator", token="operator"},
+  {face="operator", token="operator"},
+  {face="operator", token="punctuation"},
+  {face="operator", token="colon"},
+  {face="operator", token="angle"},
+  {face="operator", token="formatSpecifier"},
+
+  # Other
+  {face="attribute", token="decorator"},
+  {face="attribute", token="attribute"},
+  {face="attribute", token="builtinAttribute"},
+  {face="attribute", token="parenthesis", modifiers=["attribute"]},
+  {face="attribute", token="attributeBracket"},
+
+  {face="generic", token="generic", modifiers=["attribute"]},
+
+  {face="macro", token="macro"},
+
+  {face="lifetime", token="lifetime"},
+  {face="lifetime", token="label"},
+
+  {face="module", token="namespace"},
+
+  {face="self", token="selfKeyword"},
 ]
