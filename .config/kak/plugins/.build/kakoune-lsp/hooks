@@ -1,0 +1,5 @@
+
+set -e
+
+  cargo update
+  cargo install --locked --force --path .  

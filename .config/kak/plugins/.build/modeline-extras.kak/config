@@ -1,7 +1,12 @@
 try %{ 
 
+  require-module modeline-extras
+
+  # enable options
   modeline-git-branch-enable
   modeline-lsp-enable
+
+  source "%val{config}/statusline.kak"
  } catch %{
     echo -debug "Error while evaluating 'modeline-extras.kak' configuration: %val{error}"
 

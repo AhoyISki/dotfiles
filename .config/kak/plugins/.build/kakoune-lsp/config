@@ -1,0 +1,44 @@
+try %{ 
+
+  remove-hooks global rust-highlight
+
+  hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
+    lsp-enable-window
+
+    set-option global lsp_auto_highlight_references true
+    set-option global lsp_hover_max_diagnostic_lines 8
+
+    hook window -group semantic-tokens BufReload .* lsp-semantic-tokens
+    hook window -group semantic-tokens NormalIdle .* lsp-semantic-tokens
+    hook window -group semantic-tokens InsertIdle .* lsp-semantic-tokens
+    hook window -group semantic-tokens PromptIdle .* lsp-semantic-tokens
+
+    map window user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
+    map global view h "<esc>: lsp-hover<ret>" -docstring "LSP hover"
+    map global view e '<esc>: cargo-lclippy<ret>' -docstring "LSP priority error"
+
+    add-highlighter -override window/ wrap -width 101 -indent
+
+    evaluate-commands %sh{
+      GIT_DISCOVERY_ACROSS_FILESYSTEM=true git check-ignore -q . 2>/dev/null
+      if [ "$?" -eq "1" ]; then
+        echo "change-directory $(git rev-parse --show-toplevel)"
+      fi
+    }
+  }
+ } catch %{
+    echo -debug "Error while evaluating 'kakoune-lsp' configuration: %val{error}"
+
+    set-option -add current plug_conf_errors "Error while evaluating 'kakoune-lsp' configuration:"
+    set-option -add current plug_conf_errors %sh{ printf "\n    " }
+    set-option -add current plug_conf_errors %val{error}
+    set-option -add current plug_conf_errors %sh{ printf "\n\n" }
+
+    hook -once -group plug-conf-err global WinDisplay .* %{
+        info -style modal -title "plug.kak error" "%opt{plug_conf_errors}"
+        on-key %{
+            info -style modal
+            execute-keys -with-maps -with-hooks %val{key}
+        }
+    }
+}

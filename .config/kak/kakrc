@@ -60,13 +60,7 @@ hook global InsertCompletionShow .* %{
 }
 
 plug "andreyorst/smarttab.kak"
-plug "delapouite/kakoune-palette"
 plug "occivink/kakoune-sudo-write"
-
-plug "basbebe/modeline-extras.kak" %{
-  modeline-git-branch-enable
-  modeline-lsp-enable
-}
 
 hook global RegisterModified '"' %{
   nop %sh{
@@ -90,59 +84,47 @@ hook global BufCreate () %{
 }
 
 # LSP stuff
-plug "kak-lsp/kak-lsp" do %{
-  cargo install --locked --force --path .
-  # optional: if you want to use specific language servers
-  mkdir -p ~/.config/kak-lsp
-  cp -n kak-lsp.toml ~/.config/kak-lsp/
+plug "kakoune-lsp/kakoune-lsp" do %{
+  cargo update
+  cargo install --locked --force --path .  
+} config %{
+  remove-hooks global rust-highlight
+
+  hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
+    lsp-enable-window
+
+    set-option global lsp_auto_highlight_references true
+    set-option global lsp_hover_max_diagnostic_lines 8
+
+    hook window -group semantic-tokens BufReload .* lsp-semantic-tokens
+    hook window -group semantic-tokens NormalIdle .* lsp-semantic-tokens
+    hook window -group semantic-tokens InsertIdle .* lsp-semantic-tokens
+    hook window -group semantic-tokens PromptIdle .* lsp-semantic-tokens
+
+    map window user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
+    map global view h "<esc>: lsp-hover<ret>" -docstring "LSP hover"
+    map global view e '<esc>: cargo-lclippy<ret>' -docstring "LSP priority error"
+
+    add-highlighter -override window/ wrap -width 101 -indent
+
+    evaluate-commands %sh{
+      GIT_DISCOVERY_ACROSS_FILESYSTEM=true git check-ignore -q . 2>/dev/null
+      if [ "$?" -eq "1" ]; then
+        echo "change-directory $(git rev-parse --show-toplevel)"
+      fi
+    }
+  }
 }
 
-remove-hooks global rust-highlight
-hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp|latex|typst) %{
-  evaluate-commands %sh{
-    GIT_DISCOVERY_ACROSS_FILESYSTEM=true git check-ignore -q . 2>/dev/null
-    if [ "$?" -eq "1" ]; then
-      echo "change-directory $(git rev-parse --show-toplevel)"
-    fi
-  }
-  map global lsp e '<esc>: cargo-lclippy<ret>' -docstring 'find next error'
+plug "basbebe/modeline-extras.kak" config %{
+  require-module modeline-extras
 
-  add-highlighter -override window/ wrap -width 101 -indent
-  
-  hook window -group semantic-tokens BufReload .* %{
-    lsp-highlight-references
-    lsp-semantic-tokens
-  }
-  hook window -group semantic-tokens NormalIdle .* %{
-    lsp-highlight-references
-    lsp-semantic-tokens
-  }
-  hook window -group semantic-tokens InsertIdle .* %{
-    lsp-highlight-references
-    lsp-semantic-tokens
-  }
-  hook window -group semantic-tokens PromptIdle .* %{
-    lsp-highlight-references
-    lsp-semantic-tokens
-  }
+  # enable options
+  modeline-git-branch-enable
+  modeline-lsp-enable
 
-  lsp-enable-window
-  lsp-semantic-tokens
-
-  map window user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
-  map global view h "<esc>: lsp-hover<ret>" -docstring "LSP hover"
-  map global view e "<esc>: lsp-find-error<ret>" -docstring "LSP next error"
-  map global view <a-e> "<esc>: lsp-find-error --previous <ret>" -docstring "LSP previous error"
+  source "%val{config}/statusline.kak"
 }
-
-map global user l %{:enter-user-mode lsp<ret>} -docstring "LSP mode"
-map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-map global object e '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
-map global object k '<a-semicolon>lsp-object Class Interface Struct<ret>' -docstring 'LSP class interface or struct'
-map global object d '<a-semicolon>lsp-diagnostic-object --include-warnings<ret>' -docstring 'LSP errors and warnings'
-map global object D '<a-semicolon>lsp-diagnostic-object<ret>' -docstring 'LSP errors'
 
 # Other files
-source "%val{config}/statusline.kak"
 source "%val{config}/colorscheme.kak"
