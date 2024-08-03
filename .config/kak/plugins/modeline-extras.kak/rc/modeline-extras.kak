@@ -82,7 +82,7 @@ provide-module modeline-extras %{
   define-command -hidden modeline-git-branch-update %{
     set-option buffer modeline_git_branch %sh{
       symbol=''
-      $kak_opt_nerdfont && symbol=''
+      $kak_opt_nerdfont && symbol=' '
       branch=$(cd "${kak_buffile%/*}" 2>/dev/null && git symbolic-ref --short HEAD 2>/dev/null)
       [ $branch ] && printf '%s' "$symbol" "$branch"
     }

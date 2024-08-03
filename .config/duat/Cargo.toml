@@ -1,7 +1,7 @@
 [package]
 # Don't change the package's name. Duat depends on it.
 name = "config"
-version = "0.1.1"
+version = "0.1.3"
 edition = "2021"
 # Please don't post your configuration crate to crates.io.
 # If you want to keep it somewhere, try a repository website,
@@ -13,16 +13,12 @@ crate-type = ["dylib"]
 
 [dependencies]
 # You can get rid of this one, if you don't want the duat-kak editor.
-duat-kak = { version = ">=0.1.0", path = "/home/mateus/Development/duat/duat-kak/" }
+
+[dependencies.duat-kak]
+version = ">=0.1.3"
+path = "/home/mateus/Development/duat/duat-kak"
 
 [dependencies.duat]
-version = ">=0.1.0"
+version = ">=0.1.3"
 path = "/home/mateus/Development/duat"
 features = ["term-ui"]
-
-[profile.release.package."*"]
-opt-level = 3
-
-[profile.release]
-opt-level = 3
-lto = "off"

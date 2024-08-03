@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Europa Universalis IV
 Comment=Play this game on Steam
-Exec=steam steam://rungameid/236850 -silent
+Exec=steam steam://rungameid/236850
 Icon=steam_icon_236850
 Terminal=false
 Type=Application

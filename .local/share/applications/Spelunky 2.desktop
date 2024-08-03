@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Spelunky 2
 Comment=Play this game on Steam
-Exec=steam steam://rungameid/418530 -silent
+Exec=steam steam://rungameid/418530
 Icon=steam_icon_418530
 Terminal=false
 Type=Application
