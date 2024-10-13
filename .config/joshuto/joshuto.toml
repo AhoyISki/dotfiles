@@ -1,9 +1,13 @@
 numbered_command = false
 
+mouse_support = true
+focus_on_create = true
 use_trash = true
 watch_files = true
 xdg_open = false
 xdg_open_fork = false
+case_insensitive_ext = false
+zoxide_update = false
 
 [display]
 # default, hsplit
@@ -15,11 +19,15 @@ collapse_preview = true
 column_ratio = [1, 4, 4]
 scroll_offset = 6
 show_borders = true
-show_hidden = false
+show_hidden = true
 show_icons = true
-tilde_in_titlebar = true
 # none, absolute, relative
 line_number_style = "none"
+
+# size, mtime, user, gourp, perm. can be combined with |.
+# `none` to disable, `all` to enable all
+# all and none can't be combined with other options
+linemode = "size"
 
 [display.sort]
 # lexical, mtime, natural, size, ext
@@ -29,10 +37,18 @@ directories_first = true
 reverse = false
 
 [preview]
-max_preview_size = 2147483648
-preview_script = "~/.config/joshuto/preview_file.fish" # make sure it's marked as executable
-preview_shown_hook_script = "~/.config/joshuto/on_preview_show.fish"
-preview_removed_hook_script = "~/.config/joshuto/on_preview_removed.fish"
+max_preview_size = 10485760                           # 2MB
+preview_script = "~/.config/joshuto/preview_file.sh" # make sure it's marked as executable
+
+[search]
+# insensitive, sensitive, smart
+string_case_sensitivity = "insensitive"
+# see above
+glob_case_sensitivity = "sensitive"
+# see above
+regex_case_sensitivity = "sensitive"
+# see above
+fzf_case_sensitivity = "insensitive"
 
 [tab]
 # inherit, home, root

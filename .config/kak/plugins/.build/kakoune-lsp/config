@@ -31,9 +31,9 @@ try %{
 
     lsp-enable
 
-    try %{
-      lst-execute-command typst-lsp.doExportPdf true
-    }
+    # try %{
+    #   lst-execute-command typst-lsp.doExportPdf true
+    # # }
   }
  } catch %{
     echo -debug "Error while evaluating 'kakoune-lsp' configuration: %val{error}"

@@ -22,3 +22,10 @@ path = "/home/mateus/Development/duat/duat-kak"
 version = ">=0.1.3"
 path = "/home/mateus/Development/duat"
 features = ["term-ui"]
+
+[features]
+default = []
+deadlocks = ["duat/deadlocks"]
+
+[profile.profiling]
+inherits = "dev"

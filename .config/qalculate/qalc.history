@@ -1,72 +1,3 @@
-740 * 5 + 687.8 * 5 + 924.2 * 5 + 749.6 * 3 + 672.6 * 3) / 21
-740 * 2 + 687.8 * 1 + 924.2 * 4 + 749.6 * 1 + 672.6 * 1) / 9
-105 * 8
-xit
-m_e
-planck
-planck * light
-planck * c
-planck * c / 0.1m
-planck * 500hz
-planck * 500Hz
-planck / (m_e / c)
-planck / (m_e * 0.1m / c)
-planck / (m_e * 0.1m / c) to
-planck / (m_e * 0.1m / c) as
-planck / (m_e * 0.1m / c) into
-planck / (m_e * 0.1m / c) =>
-planck / (m_e * 0.1m / c) => J
-planck / (m_e * 0.1m / c) -> J
-planck / (e_v * 0.1m / c) -> J
-planck / (eV * 0.1m / c) -> J
-planck / (eV / c) -> J
-planck / (eV / c * 0.1m) -> J
-planck / (eV / c*0.1m) -> J
-planck / (eV / (c*0.1m) -> J
-v = planck / (m_e * 10e-10m)
-mv^2/2
-help set
-set pref 0
-set exp 0
-set exp 2
-set exp 4
-set exp 3
-set exp -3
-set exp 1
-v = planck / (m_e * 10E-10m)
-m_ev^2/2
-v = planck / (m_e * 5E-10m)
-v = planck / (m_e * 0.5E-10m)
-m_ev^2/2 -> eV
-E = planck * c / (0.5e-10m)
-v1 = planck / (m_e * E-10m)
-v1 = planck / (m_e * 1E-10m)
-v2 = planck / (m_e * 0.5e-10m
-m_e (v_2^2 - v_1^2) / 2 => eV
-m_e (v_2^2 - v_1^2) / 2 -> eV
-m_e (v2^2 - v1^2) / 2 -> eV
-h c / 300nm - 4e-19 J
-planck c / 300nm - 4e-19 J
-698 + 693 + 696)/3
-pdfq
-1000 / 15
-1000 / 12
-floor(0.5 * 339) * 1.1
-268 * 0.75
-266 * 0.75
-130 * 0.75
-257 * 0.75
-257 * 0.638 / 0.65
-257 * 0.638 / 0.65) * 0.75
-set help
-[B
-man qalc
-q
-set exp -1
-200 / 0.75
-ans
-1.69e4 * 3 * 6 * cos(4.5e-2)
-1.69e4 3 6 cos(4.5e-2)
 options'
 options
 help
@@ -97,3 +28,73 @@ arctan(((2.76e-9 / (2 * 9e-12)) * 4.13e-8) / 3.37e-6 * 10
 -14e-9 / (4pi * 9e-12 * 0.3 ^ 2
 2.4e-9 / (4pi * 9e-12 * 0.3 ^ 2
 3.5 * (4pi * 1.4 ^ 3 / 3) / (9e-12 * 4pi * 0.5 ^ 2 
+12.21 * ln((7.79e-2 + 8.36e-3) / 8.36e-3) * mu_0 * 1.19 / 2pi
+12.21 (A/s) * ln((7.79e-2 + 8.36e-3) / 8.36e-3) * mu_0 * 1.19m / 2pi
+0.73 A * 5.82 Ohm) / (3.01 T * 1.74 m
+sqrt((0.73 N * 2.85 m/s ) / 7.66 Ohm
+296.17 * (0.69 T) ^ 2 * 5.98e-3m * 34.69m/s) / 22.13 Ohm
+296.17 * (0.69 T) ^ 2 * (5.98e-3m) ^ 2 * 34.69m/s) / 22.13 Ohm
+296.17 * (0.69 T) ^ 2 * 5.98e-3m * 1.58e-2 m * 34.69m/s) / 22.13 Ohm
+296.17 * (0.69 T) ^ 2 * 5.98e-3m * 1.58e-2 m * 2 * (34.69 + 1.58e-2)m/s) / 22.13 Ohm
+1.26 T * 7.72 V * 0.31 m) / (0.51kg * 6.33 Ohm
+16.46 V / (2.14 T * 0.32m
+12.62 m/s * mu_0 * 6.71 A / 2pi ) * ln((.57 + 6.82e-2) / .57)
+mu_0 * 6 A * 0.17m / 2pi) *ln((0.08 + 0.12) / 0.08)
+mu_0 * 6A * 0.17m / 2pi) *ln((0.08 + 0.12) / 0.08)
+mu_0 * 6A * 0.17m / 2pi ) * ((4m/s / 0.2m) - 4m/s / 0.08m
+r_in := 4 L/min
+Ci := 0
+remove
+remove(Ci)
+rm(Ci)
+v_0 := 400L
+r_out := 10 L/min
+r_p := r_out/(r_in - r_out)
+t
+x
+r_in * 0 (v_0 + (r_in - r_out)x) ^ (r_p + 1)) / ((r_p + 1)(v_0 + (r_i - r_out)x(r_in - pr_out)
+r_in * 0 (v_0 + (r_in - r_out)x) ^ (r_p + 1)) / ((r_p + 1)(v_0 + (r_i - r_out)x(r_in - r_out)
+r_in * 0 (v_0 + (r_in - r_out)x) ^ (r_p + 1)) / ((r_p + 1)(v_0 + (r_in - r_out)x(r_in - r_out)
+200 ^ (5/3)
+0.002924(200 ^ (5/3))
+sqrt(175 mu V)
+sqrt(175 m V)
+sqrt(175 uV)
+sqrt(175uV * 16cm /(0.421A/s * 420 * pi))
+sqrt(175uV * 16cm /(mu_0 * 0.421A/s * 420 * pi))
+sqrt(175uV * 16cm /(mu_0 * 0.421A/s * 420^2 * pi))
+4.5T^2 * (3.1cm)^2 pi *26cm/mu_0
+4.5T^2 * (3.1cm)^2 pi *26cm/2mu_0
+(4.5T)^2 * (3.1cm)^2 pi *26cm/2mu_0
+(0.6A pi /0.045s) 3e-3
+mu_0 * 400 * 0.45cm^2 * 70A/25cm
+mu_0 * 400 * 0.45cm^2 * 70A/25cm => T
+mu_0 * 400 * 0.45cm^2 * 70A/25cm -> T
+mu_0 * 400 * 70A/25cm -> T
+400^2 * 0.45cm^2 * mu_0 / 25cm ->mH
+exp -1
+set
+set exp
+set exp -1
+set(exp
+set scientific notation
+set scientific notation(-1)
+set scientific notation 2
+set scientific notation 0
+set scientific-notation
+set scientific notation -2
+set scientific notation -1
+set scientific notation 3
+400^2 * 0.45cm^2 * mu_0 / 25cm
+set exp display 10
+400^2 * 0.45cm^2 * mu_0 * 70A/ (2*25cm
+400^2 * 0.45cm^2 * mu_0 * (70A)^2/ (2*25cm
+(8^-1 + 11^-1)^-1
+80/ans
+80/11
+0.35H / 11Ohm)ln((80V * 0.35H/11Ohm - 80V/22Ohm)*(11Ohm/(80V*0.35H
+0.35H/1Ohm)ln(2
+mu_0 * 0.8m/2pi)ln(10
+ans * (1.4A)^2 / 2
+0.7H*(1.003 * 0.9 + mu_0 * 0.1
+0.7(1.003 * 0.9 + 1 * 0.1
