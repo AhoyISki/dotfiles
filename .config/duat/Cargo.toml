@@ -26,6 +26,7 @@ features = ["term-ui"]
 [features]
 default = []
 deadlocks = ["duat/deadlocks"]
+wack = ["duat/wack"]
 
 [profile.profiling]
 inherits = "dev"

@@ -21,7 +21,7 @@ fn setup() {
         let status_line = status!(
              [File] { File::name } " "
              { KeyMap::mode_fmt } " "
-             selections_fmt " " main_fmt " "
+             selections_fmt " " main_fmt
         );
         // As opposed to `builder.push`, this one
         // takes a user defined configuration.
